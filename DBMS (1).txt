@@ -1,0 +1,160 @@
+Create Table Theatre(Theatre_ID varchar(5),Name_of_Theatre varchar(30) NOT NULL,No_of_Screens int,Area varchar(30),Primary Key(Theatre_ID));
+
+CREATE Table Web_user(Web_User_ID varchar(5),First_Name varchar(15), Last_Name varchar(20),Email_ID varchar(30),, int,Phone_Number varchar(10) NOT NULL, Primary Key(Web_User_ID));
+
+CREATE TABLE Screen(Screen_ID varchar(5),No_of_Seats_Gold int NOT NULL,No_of_Seats_Silver int NOT NULL,Theatre_ID varchar(5),Primary Key(Screen_ID),Foreign Key(Theatre_ID) REFERENCES Theatre(Theatre_ID));
+
+Create Table Movie(Movie_ID varchar(5),Name varchar(30) NOT NULL,Language varchar(10),Genre varchar(20),Target_Audience varchar(5),Primary Key(Movie_ID));
+
+CREATE Table Show(Show_ID varchar(10),Show_Time TIME,Show_Date date NOT NULL,Class_Cost_Gold int NOT NULL,Class_Cost_Silver int NOT NULL,Screen_ID varchar(5) NOT NULL,Movie_ID varchar(5) NOT NULL,Primary Key(Show_ID),Foreign Key (Screen_ID) REFERENCES Screen(Screen_ID),Foreign Key (Movie_ID) REFERENCES Movie(Movie_ID));
+
+CREATE Table Ticket(Ticket_ID varchar(20),Class varchar(3) NOT NULL,Price int NOT NULL,Primary Key(Ticket_ID));
+
+CREATE Table admin(admin_ID varchar(20),password varchar(10),primary Key(admin_ID));
+
+CREATE Table employee(employee_ID varchar(20),First_Name varchar(15),Last_Name varchar(20),primary Key(employee_ID));
+
+CREATE Table oprator_room(hall_ID varchar(20),incharge_name varchar(20),employee_ID varchar(20),primary Key(hall_ID),Foreign Key (employee_ID) REFERENCES employee (employee_ID));
+
+CREATE Table parking(slot_no varchar(20),vehical_type varchar(20),user_ID char(20),primary Key(slot_no),Foreign Key (User_ID) REFERENCES Web_User (Web_User_ID));
+
+CREATE Table Payment(Payment_ID varchar(20),Amount int NOT NULL,Date DATE NOT NULL,User_ID char(20),Ticket_ID char(20), Primary Key(Payment_ID),Foreign Key (User_ID) REFERENCES Web_User (Web_User_ID),Foreign Key(Ticket_ID) REFERENCES Ticket(Ticket_ID));
+CREATE Table SEAT(seat_id vachar(10),seat_gold int NOT NULL CHECK(seat_gold <=50),seat_silver int NOT NULL CHECK(seat_silver >50),payment_id varchar(10),primary key(seat_id),Foreign key(payment_id) REFERENCES PAYMENT(payment_id));
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+
+
+Insert into Web_user values('100', 'Amit', 'Sinha', 'amitsinhT04@gmail.com', 35, '9846273634'),('101', 'Raghav', 'Seth', 'seth.raghav987@gmail.com', 26, '7845279834'),('102', 'Anjali', 'Gupta', 'anjali23g@gmail.com', 30, '8849273345'),('103', 'Harsh', 'Patel', 'harsh001@gmail.com', 25, '9846212166'),('104', 'Yagnik', 'Mehta', 'yagnikmehta@gmail.com', 30, '9156547567');
+
+Insert into Theatre values('T01', 'PVR Cinemas', 4, 'Koramangala, Bangalore'),('T02', 'INOX Movies', 4, 'Katpadi, Vellore'),('T03', 'Cinepolis', 3, 'Meera Marg, Gurgaon'),('T04', 'PVR Cinemas', 4, 'Surat, Gujarat'),('T05', 'INOX Movies', 2, 'Baroda, Gujarat');
+
+Insert into Screen values('T011', 20, 60, 'T01'),('T012', 20, 60, 'T01'),('T013', 20, 60, 'T01'),('T014', 15, 50, 'T02'),('T015', 15, 50, 'T02');
+
+Insert into Movie values('001', 'Hichki', 'Hindi','Drama/Comedy', 'U/A'),('002', 'Pacific Rim Uprising',  'English','Fantasy/SciFi', 'U/A'),('003', 'Strangers : Prey at night','English', 'Horror', 'U/A'),('004', 'Raado',  'Hindi', 'Action', 'U/A'),('005', 'Red',  'English', 'Action/Thriller', 'U/A');
+
+Insert into Show values('SHT0110001', '09:00:00 AM', '4-APR-21', 400, 350, 'T011', '001'),('SHT0120001', '09:00:00 AM', '4-APR-21', 400, 350, 'T012', '002'),('SHT0130001', '09:00:00 AM', '4-APR-21', 400, 350, 'T013', '003'),('SHT0140001', '11:30:00 AM', '5-APR-21', 400, 350, 'T012', '002'),('SHT0150001', '01:00:00 PM', '5-APR-21',300, 250, 'T015', '004');
+
+INSERT into Ticket values('S0060SHT0110001', 'SLV',  350),('S0059SHT0110001',  'SLV',  350),('S0058SHT0110001',  'SLV',  350),('S0057SHT0110001', 'GLD',  400),('S0056SHT0110001', 'GLD',  400);
+
+INSERT into PAYMENT values('PAY00001', 1000, '2-APR-21','100'),('PAY00002', 500, '3-APR-21','101'),('PAY00003', 100, '3-APR-21','102'),('PAY00004', 400, '3-APR-21','103'),('PAY00005', 800, '4-APR-21','104');
+
+INSERT into ADMIN values('A01','abcd'),('A02','abu'),('A03','rewr'),('A04','gfdw'),('A05','yret');
+
+Insert into employee values ('E101', 'Raju', 'Gupta'),('E102', 'Aksh', 'Talati'),('E103', 'Deep', 'Sutariya'),('E104', 'Hemant', 'Patel'),('E105', 'Krish', 'Patel');
+
+Insert into oprator_room values('H01','Raju','E101'),('H02','Aksh','E102'),('H03','Deep','E103'),('H04','Aksh','E102');
+
+Insert into oprator_room values('H01','Raju','E101'),('H02','Aksh','E102'),('H03','Deep','E103'),('H04','Aksh','E102');
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+QUERIES: 
+
+
+
+
+1=> select name  from movie where genre='Horror' or genre='Action';
+2=> select name as movie_name from movie where language='Hindi';
+3=> select name_of_theatre,area,screen_id from theatre left join screen on theatre.theatre_id=screen.theatre_id;
+
+
+
+
+0=>select * from web_user where web_user_id in (select user_id from payment group by user_id having sum(amount) >500);
+1=>select movie.name from show inner join movie on show.movie_id=movie.movie_id where show.screen_id='T011' and  extract(day from show_date)=4;
+2=>select First_Name,Last_Name,Email_Id,Phone_Number,Age from web_user u left join payment p on u.web_user_id=p.user_id    left join ticket t on t.payment_id=p.payment_id   where class='GLD';
+3=>select count(payment_id) as total_customer from payment where extract(Month from date)=4 and amount>500;
+
+
+
+
+QUERIES: 
+
+1=> total amount collected on month april
+.
+	select sum(amount) as total_amount from payment where extract(month from date)=4;
+	
+2=>   theatre name of screen which has no of seats gold is 20.
+	select name_of_theatre from theatre  inner join screen on screen.theatre_id=theatre.theatre_id where no_of_seats_gold=20;
+
+3=>  ticket price  where class is gold.
+	 select price from ticket where class='GLD';
+
+4=> name of movie according to its id in descending orders.
+	select price from ticket where class='GLD';
+
+5=> count of gold_count of screens  according grouping of theatre id.
+	select count(no_of_seats_gold)  as gold_count from screen group by  theatre_id;
+
+6=> first name and last name of employee whose id is E101.
+	select first_name,last_name from employee where employee_id='E101';
+
+7=> finding  day of show where show time is 9 am.
+	 select extract(day from show_date) as show_date from show where  show_time='09:00:00 AM';
+
+
+8=> in which slot kia car is parked.
+	 select slot_no from parking where vehical_type='kia';
+
+9=>  areas where pvr cinema is located	
+	select area from theatre where name_of_theatre='PVR Cinemas';
+
+10=> name of theatres located in baroda.
+	select name_of_theatre from theatre where area='Baroda, Gujarat';
+
+
+11=> disply show date when cost of gold seat is minimun
+	select min(class_cost_gold),show_date from show group by show_date having min(class_cost_gold)<400;
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+new updates in this:
+
+alter table seat ADD show_id varchar(10);
+ALTER TABLE
+postgres=# ALTER TABLE seat  ADD FOREIGN KEY (show_id) REFERENCES show (show_id);
+
+ update seat set show_id='SHT0110001' where seat_id='s101';
+
+
+
+
+
+
+alter table Ticket ADD show_id varchar(10);
+ALTER TABLE Ticket add  FOREIGN KEY (show_id) REFERENCES show (show_id);
+
+
+
+select movie.name from show inner join movie on show.movie_id=movie.movie_id where show.screen_id='T011'and (select screen.name_of_theatre from screen inner join theatre on theatre.theatre_id=screen.theatre_id;) and  extract(day from show_date)=4;
+
+
+
+
+
+--------------------------------------------------------------------------------
+
+roughly:
+
+select movie.name from show inner join movie on show.movie_id=movie.movie_id where show.screen_id='T011' and   	(select name_of_theatre from theatre inner join screen on theatre.theatre_id=screen_id)  and extract(day from show_date)=4;
+
+
+ select t1.name_of_theatre from theatre t1 inner join  screen s on s.theatre_id=t1.theatre_id;
+
+
+
+
+
+

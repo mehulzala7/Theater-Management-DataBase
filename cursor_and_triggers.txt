@@ -1,0 +1,102 @@
+trigger::
+
+query 1=>    create function check_location() returns trigger as $$
+			 BEGIN
+			 if NEW.area='surat,Gujarat' then
+			 raise exception 'cannot book here due to curfew';
+			end if;
+			return NEW;
+			END;
+			 $$
+			 LANGUAGE PLPGSQL;
+
+
+----------CREATE FUNCTION------------
+
+ create trigger check_location
+ BEFORE  INSERT OR UPDATE
+ ON theatre
+ FOR EACH ROW
+ EXECUTE PROCEDURE check_location();
+
+--------------------CREATE TRIGGER-----
+
+Insert into Theatre values('T111', 'PVR Cinemas', 44, 'Surat,Gujarat');
+
+
+Insert into Theatre values('T111', 'PVR Cinemas', 44, 'surat,Gujarat');
+
+output:
+ERROR:  cannot book here due to curfew
+CONTEXT:  PL/pgSQL function check_location() line 4 at RAISE
+
+
+
+trigger::
+query 2=>
+	
+create function check_age() returns trigger as $$
+ BEGIN
+ if NEW.age<18 then
+ raise exception 'you are not eligible';
+ end if;
+return NEW;
+ END;
+ $$
+ LANGUAGE plpgsql;
+
+
+-------------CREATE FUNCTION--------
+
+ create trigger check_age
+ BEFORE INSERT OR UPDATE
+ ON web_user
+ FOR EACH ROW
+ EXECUTE PROCEDURE check_age();
+
+------------------CREATE TRIGGER-----
+
+ Insert into Web_user values('112', 'shorya', 'rajput', 'shoryaT04@gmail.com', 15, '9446273634');
+
+output:
+ERROR:  you are not eligible
+CONTEXT:  PL/pgSQL function check_age() line 4 at RAISE
+
+
+
+-----------CURSOR-------------------
+
+BEGIN; 
+DECLARE mycur CURSOR FOR 
+SELECT * FROM show WHERE show_date='2021-04-04'; 
+FETCH NEXT FROM mycur; 
+FETCH PRIOR FROM mycur; 
+CLOSE mycur; 
+end;
+
+
+cursor=>
+
+postgres=# BEGIN;
+BEGIN
+postgres=*# DECLARE mycrr CURSOR FOR
+postgres-*# select * from ticket where class='GLD';
+DECLARE CURSOR
+postgres=*# FETCH NEXT FROM mycrr;
+    ticket_id    | class | price |  show_id   | payment_id
+-----------------+-------+-------+------------+------------
+ S0057SHT0110001 | GLD   |   400 | SHT0120001 | PAY00001
+(1 row)
+
+
+postgres=*# FETCH PRIOR FROM mycrr;
+ ticket_id | class | price | show_id | payment_id
+-----------+-------+-------+---------+------------
+(0 rows)
+
+
+postgres=*# close mycrr;
+CLOSE CURSOR
+postgres=*# end;
+COMMIT
+postgres=#
